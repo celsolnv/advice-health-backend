@@ -1,0 +1,4 @@
+[tool.isort]
+profile = "django"           
+skip = ["migrations"]        
+line_length = 119            
