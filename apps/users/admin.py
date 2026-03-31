@@ -1,27 +1,28 @@
+# apps/users/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User
+from apps.users.models import User
 
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    ordering = ("email",)
-    list_display = ("email", "is_staff", "is_active", "is_superuser")
-    search_fields = ("email", "first_name", "last_name")
+    ordering = ["email"]
+    list_display = ["email", "first_name", "is_active", "created_at"]
+    list_filter = ["is_active"]
+    search_fields = ["email", "first_name"]
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Informacoes pessoais", {"fields": ("first_name", "last_name")}),
-        ("Permissoes", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
-        ("Datas importantes", {"fields": ("last_login",)}),
+        ("Informações pessoais", {"fields": ("first_name",)}),
+        ("Permissões", {"fields": ("is_active", "is_superuser", "groups", "user_permissions")}),
+        ("Datas", {"fields": ("created_at", "updated_at")}),
     )
+    readonly_fields = ["created_at", "updated_at"]
+
     add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "is_staff", "is_active"),
-            },
-        ),
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "first_name", "password1", "password2"),
+        }),
     )
