@@ -229,8 +229,9 @@ class TaskApiTests(APITestCase):
         response = self.client.get(self.category_list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["name"], "Trabalho")
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["name"], "Trabalho")
 
     def test_category_create_sets_owner(self):
         self.authenticate()
@@ -254,7 +255,7 @@ class TaskApiTests(APITestCase):
         response = self.client.get(self.task_list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        returned_titles = {item["title"] for item in response.data}
+        returned_titles = {item["title"] for item in response.data["results"]}
         self.assertEqual(returned_titles, {own_task.title, shared_task.title})
 
     def test_task_list_filters_by_completion_priority_and_category(self):
@@ -283,8 +284,9 @@ class TaskApiTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["title"], "Concluída")
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["title"], "Concluída")
 
     def test_task_create_rejects_category_from_another_user(self):
         self.authenticate()

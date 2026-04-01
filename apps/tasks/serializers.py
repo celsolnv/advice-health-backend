@@ -5,6 +5,8 @@ from apps.users.models import User
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    name = serializers.CharField(trim_whitespace=False)
+
     class Meta:
         model = Category
         fields = ["id", "name", "created_at"]
@@ -33,6 +35,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(trim_whitespace=False)
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
         source="category",
