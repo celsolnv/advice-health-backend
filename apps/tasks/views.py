@@ -26,6 +26,7 @@ class CategoryViewSet(ModelViewSet):
 
         return queryset
 
+
 class TaskViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer

@@ -83,22 +83,22 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskShareSerializer(serializers.ModelSerializer):
-    shared_with_email = serializers.EmailField(write_only=True)
+    shared_with_id = serializers.UUIDField(write_only=True)
     shared_with = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = TaskShare
-        fields = ["id", "shared_with", "shared_with_email", "created_at"]
+        fields = ["id", "shared_with", "shared_with_id", "created_at"]
         read_only_fields = ["id", "shared_with", "created_at"]
 
-    def validate_shared_with_email(self, value):
+    def validate_shared_with_id(self, value):
         request = self.context["request"]
 
-        if value.lower() == request.user.email.lower():
+        if value == request.user.id:
             raise serializers.ValidationError("Você não pode compartilhar uma tarefa com você mesmo.")
 
         try:
-            user = User.objects.get(email=value.lower())
+            user = User.objects.get(id=value)
         except User.DoesNotExist:
             raise serializers.ValidationError("Usuário não encontrado.")
 
@@ -112,7 +112,7 @@ class TaskShareSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop("shared_with_email")
+        validated_data.pop("shared_with_id")
         validated_data["shared_with"] = self._shared_with_user
         validated_data["task"] = self.context["task"]
         return super().create(validated_data)

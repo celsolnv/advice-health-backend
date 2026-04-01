@@ -56,6 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "email", "first_name", "created_at"]
         read_only_fields = fields
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Adiciona dados do usuário na resposta do login."""
 

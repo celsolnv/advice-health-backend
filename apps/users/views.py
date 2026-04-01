@@ -30,11 +30,14 @@ class MeView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+
 class UserSearchView(APIView):
     """Busca usuários por email ou nome para compartilhamento."""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -43,9 +46,9 @@ class UserSearchView(APIView):
         if len(query) < 3:
             return Response([])
 
-        users = User.objects.filter(
-            models.Q(email__icontains=query) | models.Q(first_name__icontains=query)
-        ).exclude(id=request.user.id)[:10]
+        users = User.objects.filter(models.Q(email__icontains=query) | models.Q(first_name__icontains=query)).exclude(
+            id=request.user.id
+        )[:10]
 
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)

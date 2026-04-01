@@ -21,8 +21,11 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ["created_at", "updated_at"]
 
     add_fieldsets = (
-        (None, {
-            "classes": ("wide",),
-            "fields": ("email", "first_name", "password1", "password2"),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "first_name", "password1", "password2"),
+            },
+        ),
     )

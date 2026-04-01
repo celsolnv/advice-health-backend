@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -149,30 +151,30 @@ class TaskShareSerializerTests(TestCase):
 
     def test_rejects_share_with_self(self):
         serializer = TaskShareSerializer(
-            data={"shared_with_email": "owner@example.com"},
+            data={"shared_with_id": str(self.owner.id)},
             context={"request": self.get_request(), "task": self.task},
         )
 
         self.assertFalse(serializer.is_valid())
         self.assertEqual(
-            serializer.errors["shared_with_email"][0],
+            serializer.errors["shared_with_id"][0],
             "Você não pode compartilhar uma tarefa com você mesmo.",
         )
 
     def test_rejects_share_with_unknown_user(self):
         serializer = TaskShareSerializer(
-            data={"shared_with_email": "missing@example.com"},
+            data={"shared_with_id": str(uuid.uuid4())},
             context={"request": self.get_request(), "task": self.task},
         )
 
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors["shared_with_email"][0], "Usuário não encontrado.")
+        self.assertEqual(serializer.errors["shared_with_id"][0], "Usuário não encontrado.")
 
     def test_rejects_duplicate_share(self):
         TaskShare.objects.create(task=self.task, shared_with=self.target_user)
 
         serializer = TaskShareSerializer(
-            data={"shared_with_email": "friend@example.com"},
+            data={"shared_with_id": str(self.target_user.id)},
             context={"request": self.get_request(), "task": self.task},
         )
 
@@ -182,9 +184,9 @@ class TaskShareSerializerTests(TestCase):
             "Esta tarefa já foi compartilhada com este usuário.",
         )
 
-    def test_create_resolves_shared_user_from_email(self):
+    def test_create_resolves_shared_user_from_id(self):
         serializer = TaskShareSerializer(
-            data={"shared_with_email": "friend@example.com"},
+            data={"shared_with_id": str(self.target_user.id)},
             context={"request": self.get_request(), "task": self.task},
         )
 
@@ -348,7 +350,7 @@ class TaskApiTests(APITestCase):
 
         response = self.client.post(
             reverse("task-share", args=[task.id]),
-            {"shared_with_email": "other@example.com"},
+            {"shared_with_id": str(self.other_user.id)},
             format="json",
         )
 
@@ -362,7 +364,7 @@ class TaskApiTests(APITestCase):
 
         response = self.client.post(
             reverse("task-share", args=[task.id]),
-            {"shared_with_email": "third@example.com"},
+            {"shared_with_id": str(self.third_user.id)},
             format="json",
         )
 
