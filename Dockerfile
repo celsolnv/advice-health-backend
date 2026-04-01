@@ -1,27 +1,25 @@
 FROM python:3.11-slim
 
-# Evita gerar arquivos .pyc
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=core.settings.production
 
 WORKDIR /app
 
 # Dependências do sistema
 RUN apt-get update && apt-get install -y \
     libpq-dev \
-    gcc
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instala dependências Python
-COPY requirements.txt .
+COPY requirements/ ./requirements/
+RUN pip install --upgrade pip \
+    && pip install -r requirements/production.txt
 
-RUN pip3 install --upgrade pip
-
-RUN pip3 install -r requirements.txt
-
-# Copia o projeto
+# Copia o projeto (venv e __pycache__ excluídos via .dockerignore)
 COPY . .
 
-# Porta padrão Django
 EXPOSE 8000
 
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]

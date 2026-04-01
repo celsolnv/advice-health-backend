@@ -90,8 +90,8 @@ Configure o `.env` para apontar para o Postgres do Docker:
 | `DB_NAME` | `advice_health_db` |
 | `DB_USER` | `postgres` |
 | `DB_PASSWORD` | `postgres` |
-| `DB_HOST` | `localhost` |
-| `DB_PORT` | `5433` |
+| `DB_HOST` | `db` |
+| `DB_PORT` | `5432` |
 
 ## Variáveis de ambiente
 
