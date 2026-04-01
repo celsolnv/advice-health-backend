@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+
 class TestRegister:
     def _clear_session(self, driver, app_url):
         """Limpa sessão navegando para a URL correta primeiro."""
@@ -25,9 +26,7 @@ class TestRegister:
         driver.find_element(By.CSS_SELECTOR, "[data-testid='input-password-confirm']").send_keys("Senha@1234")
         driver.find_element(By.CSS_SELECTOR, "[data-testid='btn-submit']").click()
 
-        WebDriverWait(driver, 10).until(
-            lambda d: "/login" in d.current_url or "/tarefas" in d.current_url
-        )
+        WebDriverWait(driver, 10).until(lambda d: "/login" in d.current_url or "/tarefas" in d.current_url)
         assert "/login" in driver.current_url or "/tarefas" in driver.current_url
 
     def test_register_duplicate_email(self, driver, app_url, registered_user):

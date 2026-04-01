@@ -20,7 +20,7 @@ class TestLogin:
         assert "/tarefas" in driver.current_url
 
     def test_login_invalid_credentials(self, driver, app_url):
-            # Limpa sessão do teste anterior
+        # Limpa sessão do teste anterior
         driver.delete_all_cookies()
         driver.execute_script("localStorage.clear()")
         driver.get(f"{app_url}/login")

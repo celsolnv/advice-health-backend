@@ -8,6 +8,8 @@ def pytest_collection_modifyitems(config, items):
         path = str(item.fspath).replace("\\", "/")
         if "/tests/e2e/" in path:
             item.add_marker(pytest.mark.e2e)
+
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
