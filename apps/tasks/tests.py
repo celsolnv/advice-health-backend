@@ -7,7 +7,6 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from apps.tasks.models import Category, Task, TaskShare
 from apps.tasks.serializers import CategorySerializer, TaskSerializer, TaskShareSerializer
 
-
 User = get_user_model()
 
 

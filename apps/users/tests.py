@@ -6,7 +6,6 @@ from rest_framework.test import APITestCase
 
 from apps.users.serializers import RegisterSerializer
 
-
 User = get_user_model()
 
 
