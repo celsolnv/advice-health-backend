@@ -1,5 +1,6 @@
 from django.db import models
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,20 +36,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-class UserSearchView(APIView):
-    """Busca usuários por email ou nome para compartilhamento."""
-
+class UserSearchView(ListAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
 
-    def get(self, request):
-        query = request.query_params.get("q", "").strip()
+    def get_queryset(self):
+        query = self.request.query_params.get("q", "").strip()
 
-        if len(query) < 3:
-            return Response([])
-
-        users = User.objects.filter(models.Q(email__icontains=query) | models.Q(first_name__icontains=query)).exclude(
-            id=request.user.id
-        )[:10]
-
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+        return User.objects.filter(models.Q(email__icontains=query) | models.Q(first_name__icontains=query)).exclude(
+            id=self.request.user.id
+        )
