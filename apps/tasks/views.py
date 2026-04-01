@@ -12,11 +12,19 @@ from apps.tasks.serializers import CategorySerializer, TaskSerializer, TaskShare
 class CategoryViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CategorySerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["name"]
+    ordering_fields = ["name", "created_at"]
 
     def get_queryset(self):
         """Usuário só vê suas próprias categorias."""
-        return Category.objects.filter(owner=self.request.user)
+        queryset = Category.objects.filter(owner=self.request.user)
 
+        name = self.request.query_params.get("name")
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        return queryset
 
 class TaskViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
