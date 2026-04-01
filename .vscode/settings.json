@@ -6,6 +6,7 @@
     "isort",
     "psycopg",
     "pytest",
-    "simplejwt"
+    "simplejwt",
+    "viewsets"
   ]
 }
