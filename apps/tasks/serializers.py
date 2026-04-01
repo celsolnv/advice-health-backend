@@ -45,6 +45,12 @@ class TaskSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
     is_shared = serializers.SerializerMethodField()
     origin = serializers.SerializerMethodField()
+    due_date = serializers.DateField(
+        format="%Y-%m-%d",
+        input_formats=["%Y-%m-%d"],
+        required=False,
+        allow_null=True,
+    )
 
     class Meta:
         model = Task

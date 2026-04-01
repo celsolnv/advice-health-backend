@@ -97,12 +97,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # --- DRF ---
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",  # protege tudo por padrão
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),  # protege tudo por padrão
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
@@ -115,8 +111,8 @@ from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,       # gera novo refresh a cada uso
-    "BLACKLIST_AFTER_ROTATION": False,    # ativar depois com blacklist app
+    "ROTATE_REFRESH_TOKENS": True,  # gera novo refresh a cada uso
+    "BLACKLIST_AFTER_ROTATION": False,  # ativar depois com blacklist app
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
