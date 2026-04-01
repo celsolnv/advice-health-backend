@@ -58,12 +58,9 @@ class TaskViewSet(ModelViewSet):
     def toggle_completed(self, request, pk=None):
         task = self.get_object()
 
-        # Verifica se é dono OU se a tarefa foi compartilhada com o usuário
-        is_shared_with_user = task.shares.filter(shared_with=request.user).exists()
-
-        if task.owner != request.user and not is_shared_with_user:
+        if task.owner != request.user:
             return Response(
-                {"detail": "Sem permissão para alterar o status desta tarefa."},
+                {"detail": "Apenas o dono pode alterar o status."},
                 status=status.HTTP_403_FORBIDDEN,
             )
 

@@ -168,8 +168,9 @@ class UserApiTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("first_name", response.data)
-        self.assertIn("password", response.data)
+        errors = response.data["errors"]
+        self.assertIn("first_name", errors)
+        self.assertIn("password", errors)
 
     def test_login_returns_jwt_tokens_for_valid_credentials(self):
         User.objects.create_user(

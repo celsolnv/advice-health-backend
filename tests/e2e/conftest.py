@@ -1,5 +1,13 @@
 import pytest
 import requests
+
+
+def pytest_collection_modifyitems(config, items):
+    """pytestmark em conftest é ignorado; marca e2e para -m 'not e2e' no pytest.ini."""
+    for item in items:
+        path = str(item.fspath).replace("\\", "/")
+        if "/tests/e2e/" in path:
+            item.add_marker(pytest.mark.e2e)
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -11,7 +19,7 @@ API_URL = "http://localhost:8000/api/v1"
 @pytest.fixture(scope="session")
 def driver():
     options = Options()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
@@ -44,9 +52,7 @@ def registered_user():
 
     # Tenta criar — ignora se já existir (400 = email duplicado)
     response = requests.post(f"{API_URL}/users/register/", json=user)
-    assert response.status_code in (201, 400), (
-        f"Falha inesperada ao criar usuário de teste: {response.text}"
-    )
+    assert response.status_code in (201, 400), f"Falha inesperada ao criar usuário de teste: {response.text}"
 
     return {
         "first_name": user["first_name"],

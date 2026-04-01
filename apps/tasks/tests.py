@@ -303,7 +303,10 @@ class TaskApiTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["category_id"][0], "Categoria inválida.")
+        self.assertEqual(
+            response.data["errors"]["category_id"][0],
+            "Categoria inválida.",
+        )
 
     def test_task_create_sets_owner(self):
         self.authenticate()
