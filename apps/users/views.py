@@ -8,6 +8,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.users.serializers import CustomTokenObtainPairSerializer
 
+from django.db import models
+from apps.users.models import User
+
 class RegisterView(APIView):
     """Endpoint público para criação de novos usuários."""
 
@@ -31,3 +34,20 @@ class MeView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class UserSearchView(APIView):
+    """Busca usuários por email ou nome para compartilhamento."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        query = request.query_params.get("q", "").strip()
+
+        if len(query) < 3:
+            return Response([])
+
+        users = User.objects.filter(
+            models.Q(email__icontains=query) | models.Q(first_name__icontains=query)
+        ).exclude(id=request.user.id)[:10]
+
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
