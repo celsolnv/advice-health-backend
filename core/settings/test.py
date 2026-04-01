@@ -12,3 +12,5 @@ DATABASES = {
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
+
+SECRET_KEY = "87a35050-fcef-4ee6-af04-e3bdd683923f"
