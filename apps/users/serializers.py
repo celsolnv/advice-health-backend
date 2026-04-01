@@ -1,9 +1,8 @@
-# apps/users/serializers.py
 import re
 
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apps.users.models import User
 
 
@@ -55,3 +54,17 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "email", "first_name", "created_at"]
         read_only_fields = fields
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Adiciona dados do usuário na resposta do login."""
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        data["user"] = {
+            "id": str(self.user.id),
+            "email": self.user.email,
+            "first_name": self.user.first_name,
+        }
+
+        return data
