@@ -56,12 +56,14 @@ class TaskViewSet(ModelViewSet):
 
     @action(detail=True, methods=["patch"], url_path="toggle")
     def toggle_completed(self, request, pk=None):
-        """Alterna o status de conclusão da tarefa."""
         task = self.get_object()
 
-        if task.owner != request.user:
+        # Verifica se é dono OU se a tarefa foi compartilhada com o usuário
+        is_shared_with_user = task.shares.filter(shared_with=request.user).exists()
+
+        if task.owner != request.user and not is_shared_with_user:
             return Response(
-                {"detail": "Apenas o dono pode alterar o status."},
+                {"detail": "Sem permissão para alterar o status desta tarefa."},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -87,3 +89,26 @@ class TaskViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_permissions(self):
+        if self.action in ["destroy", "update"]:
+            return [IsAuthenticated()]
+        return super().get_permissions()
+
+    def destroy(self, request, *args, **kwargs):
+        task = self.get_object()
+        if task.owner != request.user:
+            return Response(
+                {"detail": "Apenas o dono pode excluir a tarefa."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return super().destroy(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        task = self.get_object()
+        if task.owner != request.user:
+            return Response(
+                {"detail": "Apenas o dono pode editar a tarefa."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return super().update(request, *args, **kwargs)

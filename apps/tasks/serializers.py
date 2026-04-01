@@ -44,6 +44,7 @@ class TaskSerializer(serializers.ModelSerializer):
     )
     category_name = serializers.CharField(source="category.name", read_only=True)
     is_shared = serializers.SerializerMethodField()
+    origin = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -57,6 +58,7 @@ class TaskSerializer(serializers.ModelSerializer):
             "category_id",
             "category_name",
             "is_shared",
+            "origin",
             "created_at",
             "updated_at",
         ]
@@ -80,6 +82,19 @@ class TaskSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
         return super().create(validated_data)
+
+    def get_origin(self, obj):
+        request = self.context.get("request")
+        if not request:
+            return "own"
+
+        if obj.owner == request.user:
+            return {"type": "own"}
+
+        return {
+            "type": "shared",
+            "shared_by": obj.owner.email,  # ou .name, dependendo do seu modelo de User
+        }
 
 
 class TaskShareSerializer(serializers.ModelSerializer):
